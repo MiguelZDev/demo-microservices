@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+@RefreshScope
 @RestController
 @RequiredArgsConstructor
 public class ItemController {
@@ -25,8 +28,9 @@ public class ItemController {
     private static Logger log = LoggerFactory.getLogger(ItemController.class);
 
     private final ItemService service;
+    private final Environment env;
 
-    @Value("${custom.text}")
+    @Value("${config.custom.text}")
     private String configText;
 
     @GetMapping("/items")
@@ -56,6 +60,12 @@ public class ItemController {
         Map<String, String> response = new HashMap<>();
         response.put("text",configText);
         response.put("port",port);
+
+        if (env.getActiveProfiles().length > 0 && env.getActiveProfiles()[0].equals("dev")) {
+            response.put("author.name", env.getProperty("config.author.name"));
+            response.put("author.email", env.getProperty("config.author.email"));
+        }
+
         return ResponseEntity.ok(response);
     }
 
