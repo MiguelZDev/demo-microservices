@@ -1,6 +1,7 @@
 package com.udemy.microservices.items.service;
 
 import com.udemy.microservices.items.model.Item;
+import com.udemy.microservices.items.model.Product;
 import com.udemy.microservices.items.rest.ProductsClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
@@ -24,5 +25,20 @@ public class ItemServiceFeign implements ItemService {
     @Override
     public Item findById(Long id, Integer quantity) {
         return new Item(client.getById(id), quantity);
+    }
+
+    @Override
+    public Product save(Product product) {
+        return null;
+    }
+
+    @Override
+    public Product update(Product product, Long id) {
+        return null;
+    }
+
+    @Override
+    public void deleteById(Long id) {
+
     }
 }

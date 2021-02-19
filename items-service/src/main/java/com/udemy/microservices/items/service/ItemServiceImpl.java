@@ -5,6 +5,9 @@ import com.udemy.microservices.items.model.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -31,6 +34,25 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item findById(Long id, Integer quantity) {
         Product product = restTemplate.getForObject("http://products-service/products/{id}", Product.class, id);
-        return new Item(product,quantity);
+        return new Item(product, quantity);
+    }
+
+    @Override
+    public Product save(Product product) {
+        HttpEntity<Product> body = new HttpEntity<>(product);
+        ResponseEntity<Product> response = restTemplate.exchange("http://products-service/products", HttpMethod.POST, body, Product.class);
+        return response.getBody();
+    }
+
+    @Override
+    public Product update(Product product, Long id) {
+        HttpEntity<Product> body = new HttpEntity<>(product);
+        ResponseEntity<Product> response = restTemplate.exchange("http://products-service/products/{id}", HttpMethod.PUT, body, Product.class, id);
+        return response.getBody();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        restTemplate.delete("http://products-service/products/{id}",id);
     }
 }

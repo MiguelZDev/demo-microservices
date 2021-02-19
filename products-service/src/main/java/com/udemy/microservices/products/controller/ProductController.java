@@ -24,7 +24,7 @@ public class ProductController {
     public List<Product> getAll() {
         return service.getAll().stream().map(product -> {
 //            product.setPort(Integer.parseInt(env.getProperty("local.server.port")));
-            product.setPort(port);
+            //product.setPort(port);
             return product;
         }).collect(Collectors.toList());
     }
@@ -44,13 +44,19 @@ public class ProductController {
     }
 
     @PutMapping("/products/{id}")
+    @ResponseStatus(HttpStatus.CREATED)
     public Product edit(@RequestBody Product product, @PathVariable Long id) {
         Product productDb = service.getById(id);
-        if (product == null) {
-            return null;
-        }
-        product.setId(id);
-        return service.save(product);
+        productDb.setName(product.getName());
+        productDb.setPrice(product.getPrice());
+
+        return service.save(productDb);
+    }
+
+    @DeleteMapping("/products/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        service.deleteById(id);
     }
 
 }
